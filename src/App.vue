@@ -1,26 +1,27 @@
 <template>
-<div id="app">
-	<Header>
-		TAMSAT ALERT
-	</Header>
+<div id="app" class="container">
+	<Header></Header>
+	Really, what is this thing doing?
 	<Form></Form>
+	<Footer></Footer>
 </div>
 </template>
 
 <script>
 import Header from './components/Header.vue'
 import Form from './components/Form.vue'
+import Footer from './components/Footer.vue'
 
 export default {
 	name: 'app',
 	data() {
 		return {
-			msg: 'Welcome to Your Vue.js App'
 		}
 	},
 	components: {
 		Header,
-		Form
+		Form,
+		Footer
 	}
 }
 </script>
@@ -31,5 +32,7 @@ export default {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	font-size: 0.9rem;
+	max-width: 500px;
+	padding: 0;
 }
 </style>

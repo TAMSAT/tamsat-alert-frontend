@@ -1,5 +1,5 @@
 <template>
-<form method="POST" action="tamsatAlertTask" onsubmit="return validateForm()">
+<form method="POST" action="tamsatAlertTask" @submit="validateForm">
 	<fieldset class="form-group">
 		<legend>Location</legend>
 		<!-- The TAMSAT alert system takes -->
@@ -7,11 +7,11 @@
 		<div class="row form-group" id="pointSelection">
 			<div class="col">
 				<small class="form-text text-muted">Latitude</small>
-				<input class="form-control" id="lat" type="number" name="lat" min=-35 max=39 value=0 step="any" />
+				<input class="form-control" id="lat" type="number" name="lat" min=-35 max=39 v-model="latitude" step="any" />
 			</div>
 			<div class="col">
 				<small class="form-text text-muted">Longitude</small>
-				<input class="form-control" id="lon" type="number" name="lon" min=-20 max=52 value=0 step="any" />
+				<input class="form-control" id="lon" type="number" name="lon" min=-20 max=52 v-model="longitude" step="any" />
 			</div>
 		</div>
 	</fieldset>
@@ -19,18 +19,18 @@
 		<legend>Time</legend>
 		<div class="form-group">
 			<label for="forecastDate">Forecast Date</label>
-			<input class="form-control" type="date" id="forecastDate" name="initDate" value="2010-12-01" required>
+			<input class="form-control" type="date" id="forecastDate" name="initDate" v-model="forecastDate" required>
 		</div>
 		<div class="form-group">
 			Period of interest
 			<div class="row">
 				<div class="col">
 					<small class="form-text text-muted">Start</small>
-					<input class="form-control" type="date" id="poiStart" name="poiStart" min="1970-01-01" max="1970-12-31" value="1970-11-01" required>
+					<DayMonthPicker v-model="poiStartDayMonth"></DayMonthPicker>
 				</div>
 				<div class="col">
 					<small class="form-text text-muted">End</small>
-					<input class="form-control" type="date" id="poiEnd" name="poiEnd" min="2009-01-01" max="2009-12-31" value="2009-02-28" required>
+					<DayMonthPicker v-model="poiEndDayMonth"></DayMonthPicker>
 				</div>
 			</div>
 		</div>
@@ -39,15 +39,15 @@
 		<legend>Metric</legend>
 		<div class="form-group">
 			<div class="form-check">
-				<input class="form-check-input" type="radio" id="cumRain" name="metric" value="cumRain" checked>
+				<input class="form-check-input" type="radio" id="cumRain" name="metric" value="cumRain" checked v-model="metric">
 				<label class="form-check-label" for="cumRain">Cumulative Rainfall</label>
 			</div>
 			<!-- <div class="form-check">
-				<input class="form-check-input" type="radio" id="soilmoisture" name="metric" value="soilMoisture">
+				<input class="form-check-input" type="radio" id="soilmoisture" name="metric" value="soilMoisture" v-model="metric">
 				<label class="form-check-label" for="soilmoisture">Soil Moisture</label>
 			</div>
 			<div class="form-check">
-				<input class="form-check-input" type="radio" id="wrsi" name="metric" value="wrsi">
+				<input class="form-check-input" type="radio" id="wrsi" name="metric" value="wrsi" v-model="metric">
 				<label class="form-check-label" for="wrsi">WRSI</label>
 			</div> -->
 		</div>
@@ -59,11 +59,11 @@
 			<div class="row">
 				<div class="col">
 					<small class="form-text text-muted">Start</small>
-					<input class="form-control" type="date" id="forecastStart" name="forecastStart" min="1970-01-01" max="1970-12-31" value="1970-01-01" required>
+					<DayMonthPicker v-model="fcStartDayMonth"></DayMonthPicker>
 				</div>
 				<div class="col">
 					<small class="form-text text-muted">End</small>
-					<input class="form-control" type="date" id="forecastEnd" name="forecastEnd" min="1970-01-01" max="1970-12-31" value="1970-09-30" required>
+					<DayMonthPicker v-model="fcEndDayMonth"></DayMonthPicker>
 				</div>
 			</div>
 		</div>
@@ -72,21 +72,21 @@
 			<div class="row">
 				<div class="col">
 					<small class="form-text text-muted">Tercile 1</small>
-					<input class="form-control" type="number" step="any" name="tercileLow" value="0">
+					<input class="form-control" type="number" step="0.01" name="tercileLow" v-model="t1" id="terciles">
 				</div>
 				<div class="col">
 					<small class="form-text text-muted">Tercile 2</small>
-					<input class="form-control" type="number" step="any" name="tercileMid" value="0">
+					<input class="form-control" type="number" step="0.01" name="tercileMid" v-model="t2">
 				</div>
 				<div class="col">
 					<small class="form-text text-muted">Tercile 3</small>
-					<input class="form-control" type="number" step="any" name="tercileHigh" value="1">
+					<input class="form-control" type="number" step="0.01" name="tercileHigh" v-model="t3">
 				</div>
 			</div>
 		</div>
 		<div class="form-group">
 			<label>Probability distribution for percentile calculations</label>
-			<select class="form-control" name="stat">
+			<select class="form-control" name="stat" v-model="statType">
 				<option value="normal">Normal</option>
 				<option value="ecdf">ECDF</option>
 			</select>
@@ -96,39 +96,86 @@
 		<legend>User details</legend>
 		<div class="form-group">
 			<label for="email">Email address</label>
-			<input class="form-control" id="email" type="email" name="email" placeholder="Enter email" />
+			<input class="form-control" id="email" type="email" name="email" placeholder="Enter email" required/>
 		</div>
 		<div class="form-group">
 			<label for="ref">Job/Group Reference&nbsp;<img src="../assets/img/info.png" title="This is an extra reference for the subset job, or a group of subset jobs.  You will need to provide this and your email address when you want to download the data.  You can use the same reference for different jobs.  It is there to prevent other people from downloading your data just by knowing your email address, but is not as secure as a password."/></label>
-			<input class="form-control" id="ref" type="text" name="ref" value="tamsat-alert" />
+			<input class="form-control" id="ref" type="text" name="ref" value="tamsat-alert" required/>
 		</div>
 	</fieldset>
-	<buttom class="btn btn-primary" type="submit">Submit Job</buttom>
+	<div class="text-center">
+		<button class="btn btn-primary" type="submit">Submit Job</button>
+	</div>
+	<!-- Space so that button doesn't go behind footer -->
+	<br /><br /><br />
 </form>
 </template>
 
+<script>
+	import DayMonthPicker from './DayMonthPicker.vue'
+
+	export default {
+		data() {
+			return {
+				latitude: 0,
+				longitude: 0,
+				fDate: new Date(),
+				poiStartDayMonth: {day: 1, month: 1},
+				poiEndDayMonth: {day: 31, month: 12},
+				metric: 'cumRain',
+				fcStartDayMonth: {day: 1, month: 1},
+				fcEndDayMonth: {day: 31, month: 12},
+				t1: 0.33,
+				t2: 0.33,
+				t3: 0.33,
+				statType: 'normal'
+			}
+		},
+		computed: {
+			forecastDate: {
+				get(){
+					return this.fDate.toISOString().substring(0,10)
+				},
+				set(newVal) {
+					this.fDate = new Date(Date.parse(newVal))
+				}
+			}
+		},
+		methods: {
+			validateForm(e) {
+				let failed = false
+				// Validate that terciles add up to 1 (ish)
+				if(Math.abs(this.t1+this.t2+this.t3-1.0) > 0.015) {
+					failed = true
+					document.getElementById('terciles').setCustomValidity('The 3 terciles must add up to 1')
+				}
+				if(failed) {
+					e.preventDefault()
+				}
+			}
+		},
+		components: {
+			DayMonthPicker
+		}
+	}
+</script>
+
 <style scoped>
 form {
-	max-width: 500px;
 	margin: auto;
 }
 
-.form-group {
-
-}
-
 fieldset {
-    border: 1px groove #ddd !important;
-    padding: 0 1.4em 0 1.4em;
-    margin: 0 0 1.5em 0 !important;
-    -webkit-box-shadow:  0px 0px 0px 0px #000;
-            box-shadow:  0px 0px 0px 0px #000;
+	border: 1px solid #aaa;
+	border-radius: 3px;
+	padding: 0 1.4em 0 1.4em;
+	margin: 0 0 0.5em 0;
 }
 
 legend {
 	width: inherit;
-    font-size: 1.2em !important;
-    font-weight: bold !important;
-    text-align: left !important;
+	font-size: 1.2em !important;
+	font-weight: bold !important;
+	text-align: left !important;
 }
 </style>
