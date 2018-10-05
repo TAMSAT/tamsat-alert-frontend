@@ -1,7 +1,6 @@
 <template>
 <div id="app" class="container">
 	<Header></Header>
-	Really, what is this thing doing?
 	<Form></Form>
 	<Footer></Footer>
 </div>

@@ -1,5 +1,7 @@
 <template>
 <div class="date-picker form-row">
+	<input type="hidden" :name="nameDay" :value="value.day" />
+	<input type="hidden" :name="nameMonth" :value="value.month" />
 	<select class="form-control col"
 		   ref="dayPicker"
 		   :value="value.day"
@@ -30,8 +32,20 @@
 const N_DAYS=[31,29,31,30,31,30,31,31,30,31,30,31]
 
 export default {
-	props: ['value'],
-
+	props: {
+		value: {
+			type: Object,
+			required: true
+		},
+		nameDay: {
+			type: String,
+			required: true
+		},
+		nameMonth: {
+			type: String,
+			required: true
+		}
+	},
 	methods: {
 		updateDate() {
 			this.$emit('input', {

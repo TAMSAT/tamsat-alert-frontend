@@ -26,11 +26,11 @@
 			<div class="row">
 				<div class="col">
 					<small class="form-text text-muted">Start</small>
-					<DayMonthPicker v-model="poiStartDayMonth"></DayMonthPicker>
+					<DayMonthPicker name-day="poiStartDay" name-month="poiStartMonth" v-model="poiStartDayMonth"></DayMonthPicker>
 				</div>
 				<div class="col">
 					<small class="form-text text-muted">End</small>
-					<DayMonthPicker v-model="poiEndDayMonth"></DayMonthPicker>
+					<DayMonthPicker name-day="poiEndDay" name-month="poiEndMonth" v-model="poiEndDayMonth"></DayMonthPicker>
 				</div>
 			</div>
 		</div>
@@ -59,11 +59,11 @@
 			<div class="row">
 				<div class="col">
 					<small class="form-text text-muted">Start</small>
-					<DayMonthPicker v-model="fcStartDayMonth"></DayMonthPicker>
+					<DayMonthPicker name-day="fcStartDay" name-month="fcStartMonth" v-model="fcStartDayMonth"></DayMonthPicker>
 				</div>
 				<div class="col">
 					<small class="form-text text-muted">End</small>
-					<DayMonthPicker v-model="fcEndDayMonth"></DayMonthPicker>
+					<DayMonthPicker name-day="fcEndDay" name-month="fcEndMonth" v-model="fcEndDayMonth"></DayMonthPicker>
 				</div>
 			</div>
 		</div>
