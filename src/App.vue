@@ -1,25 +1,27 @@
 <template>
 <div id="app" class="container">
 	<Header></Header>
-	<Form></Form>
+	<router-view></router-view>
+	<!-- <Form></Form> -->
 	<Footer></Footer>
 </div>
 </template>
 
 <script>
 import Header from './components/Header.vue'
-import Form from './components/Form.vue'
+// import Form from './components/Form.vue'
 import Footer from './components/Footer.vue'
 
 export default {
 	name: 'app',
 	data() {
 		return {
+			apiUrl: 'api/'
 		}
 	},
 	components: {
 		Header,
-		Form,
+		// Form,
 		Footer
 	}
 }
