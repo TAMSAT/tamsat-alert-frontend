@@ -50,9 +50,9 @@
 
 <script>
 export default {
+	props: ['apiUrl'],
 	data() {
 		return {
-			apiUrl: 'api/',
 			// These are not bound - they just get populated on init
 			email: this.$route.query.email,
 			jobRef: this.$route.query.ref ? this.$route.query.ref : 'tamsat-alert',

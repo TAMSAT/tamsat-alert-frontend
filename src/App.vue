@@ -1,15 +1,13 @@
 <template>
 <div id="app" class="container">
 	<Header></Header>
-	<router-view></router-view>
-	<!-- <Form></Form> -->
+	<router-view :apiUrl="apiUrl"></router-view>
 	<Footer></Footer>
 </div>
 </template>
 
 <script>
 import Header from './components/Header.vue'
-// import Form from './components/Form.vue'
 import Footer from './components/Footer.vue'
 
 export default {
@@ -21,7 +19,6 @@ export default {
 	},
 	components: {
 		Header,
-		// Form,
 		Footer
 	}
 }

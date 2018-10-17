@@ -141,6 +141,7 @@
 import DayMonthPicker from './DayMonthPicker.vue'
 
 export default {
+	props: ['apiUrl'],
 	data() {
 		return {
 			latitude: 0,
@@ -170,8 +171,7 @@ export default {
 			email: '',
 			jobRef: 'tamsat-alert',
 
-			submitted: false,
-			apiUrl: 'api/'
+			submitted: false
 		}
 	},
 	computed: {
