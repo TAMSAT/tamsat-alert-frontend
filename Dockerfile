@@ -4,9 +4,12 @@ COPY package.json package-lock.json webpack.config.js .babelrc webpack.config.js
 COPY src/ /build/src/
 WORKDIR /build
 RUN npm install
+
 # This should match the path which the TAMSAT ALERT
 # system is running at relative to the domain name
-ENV BASE_URL="/alert/"
+ARG BASE_URL
+ENV BASE_URL=${BASE_URL}
+
 RUN npm run build
 
 # Having built the code on `docker build`, we copy
