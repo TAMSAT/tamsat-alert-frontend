@@ -4,6 +4,7 @@ import Home from './components/Home.vue'
 import Form from './components/Form.vue'
 import JobList from './components/JobList.vue'
 import Admin from './components/Admin.vue'
+import PageNotFound from './components/404.vue'
 
 Vue.use(Router)
 
@@ -30,6 +31,10 @@ export default new Router({
 		// 	path: '/admin',
 		// 	name: 'admin',
 		// 	component: Admin
-		// }
+		// },
+		{
+			path: '*',
+			component: PageNotFound
+		}
 	]
 })
