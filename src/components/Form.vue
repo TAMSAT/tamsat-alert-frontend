@@ -239,9 +239,9 @@ export default {
 			if (!failed) {
 				const today = new Date()
 				let ok = true
-				if (this.fDate.year === today.year &&
-					this.fDate.month === today.month &&
-					this.fDate.day === today.day) {
+				if (this.fDate.getYear() === today.getYear() &&
+					this.fDate.getMonth() === today.getMonth() &&
+					this.fDate.getDate() === today.getDate()) {
 					// Forecast date is set to today
 					ok = window.confirm('The forecast date is set to today - due to data latency issues, TAMSAT ALERT will use the most recent possible date, which will most likely not be the selected date.  Continue?')
 				}
