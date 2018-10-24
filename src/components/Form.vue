@@ -2,7 +2,9 @@
 <div>
 	<form method="POST" action="tamsatAlertTask" @submit.prevent="submitForm">
 		<fieldset class="form-group">
-			<legend>Location</legend>
+			<legend>Location&nbsp;
+				<InfoBox :message="help.location" />
+			</legend>
 			<!-- The TAMSAT alert system takes -->
 			<input class="form-control" type="hidden" name="locationType" value="point" />
 			<div class="row form-group" id="pointSelection">
@@ -17,27 +19,17 @@
 			</div>
 		</fieldset>
 		<fieldset class="form-group">
-			<legend>Time</legend>
+			<legend>Forecast Date&nbsp;
+				<InfoBox :message="help.forecastDate" />
+			</legend>
 			<div class="form-group">
-				<label for="forecastDate">Forecast Date</label>
 				<input class="form-control" type="date" id="forecastDate" name="initDate" v-model="forecastDate" required>
-			</div>
-			<div class="form-group">
-				Period of interest
-				<div class="row">
-					<div class="col">
-						<small class="form-text text-muted">Start</small>
-						<DayMonthPicker name-day="poiStartDay" name-month="poiStartMonth" v-model="poiStartDayMonth"></DayMonthPicker>
-					</div>
-					<div class="col">
-						<small class="form-text text-muted">End</small>
-						<DayMonthPicker name-day="poiEndDay" name-month="poiEndMonth" v-model="poiEndDayMonth"></DayMonthPicker>
-					</div>
-				</div>
 			</div>
 		</fieldset>
 		<fieldset class="form-group">
-			<legend>Metric</legend>
+			<legend>Metric&nbsp;
+				<InfoBox :message="help.metric" />
+			</legend>
 			<div class="form-group">
 				<div class="form-check">
 					<input class="form-check-input" type="radio" id="cumRain" name="metric" value="cumRain" checked v-model="metric">
@@ -52,11 +44,26 @@
 					<label class="form-check-label" for="wrsi">WRSI</label>
 				</div> -->
 			</div>
+			<div class="form-group">
+				Period of interest&nbsp;
+				<InfoBox :message="help.periodOfInterest" />
+				<div class="row">
+					<div class="col">
+						<small class="form-text text-muted">Start</small>
+						<DayMonthPicker name-day="poiStartDay" name-month="poiStartMonth" v-model="poiStartDayMonth"></DayMonthPicker>
+					</div>
+					<div class="col">
+						<small class="form-text text-muted">End</small>
+						<DayMonthPicker name-day="poiEndDay" name-month="poiEndMonth" v-model="poiEndDayMonth"></DayMonthPicker>
+					</div>
+				</div>
+			</div>
 		</fieldset>
 		<fieldset class="form-group">
 			<legend>Meteorological Forecast</legend>
 			<div class="form-group">
-				Forecast period
+				Forecast period&nbsp;
+				<InfoBox :message="help.forecastPeriod" />
 				<div class="row">
 					<div class="col">
 						<small class="form-text text-muted">Start</small>
@@ -86,9 +93,9 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label>Probability distribution for percentile calculations</label>
+				<label>Probability distribution for percentile calculations&nbsp;<InfoBox :message="help.probDist" /></label>
 				<select class="form-control" name="stat" v-model="statType">
-					<option value="normal">Normal</option>
+					<option value="normal">Gaussian</option>
 					<option value="ecdf">ECDF</option>
 				</select>
 			</div>
@@ -96,11 +103,11 @@
 		<fieldset class="form-group">
 			<legend>User details</legend>
 			<div class="form-group">
-				<label for="email">Email address</label>
+				<label for="email">Email address&nbsp;<InfoBox :message="help.email" /></label>
 				<input class="form-control" id="email" type="email" name="email" placeholder="Enter email" v-model="email" required />
 			</div>
 			<div class="form-group">
-				<label for="ref">Job/Group Reference&nbsp;<img src="../assets/img/info.png" title="This is an extra reference for the subset job, or a group of subset jobs.  You will need to provide this and your email address when you want to download the data.  You can use the same reference for different jobs.  It is there to prevent other people from downloading your data just by knowing your email address, but is not as secure as a password."/></label>
+				<label for="ref">Job/Group Reference&nbsp;<InfoBox :message="help.ref" /></label>
 				<input class="form-control" id="ref" type="text" name="ref" v-model="jobRef" required/>
 			</div>
 		</fieldset>
@@ -110,8 +117,8 @@
 		<!-- Space so that button doesn't go behind footer -->
 		<br /><br /><br />
 	</form>
-	<div class="dialog" v-show="submitted">
-		<div class="modal-dialog" role="document">
+	<div class="dialog" v-show="submitting || submitted || error">
+		<div class="modal-dialog" role="document" v-show="submitted">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title">Job submitted</h5>
@@ -121,7 +128,7 @@
 				</div>
 				<div class="modal-body">
 					<p>Job successfully submitted to the TAMSAT-ALERT server.</p>
-					<p>You will receive an email when your job is completed.  If you wish to check on the progress, or download previous jobs, click the button below.</p>
+					<p>You will receive an email when your job is completed. If you wish to check on the progress, or download previous jobs, click the button below.</p>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-primary" @click="goToJobs">
@@ -133,12 +140,44 @@
 				</div>
 			</div>
 		</div>
+		<div class="modal-dialog" role="document" v-show="error">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Problem submitting job</h5>
+					<button type="button" class="close" @click="error=false">
+          				<span>&times;</span>
+        			</button>
+				</div>
+				<div class="modal-body">
+					<div v-if="errorMessage">
+						<p>The TAMSAT ALERT server has experienced an error.  Message from the server:</p>
+						<pre>{{errorMessage}}</pre>
+					</div>
+					<div v-else>
+						<p>The TAMSAT ALERT server is currently experiencing a problem.</p>
+						<p>Please retry submitting your job again later.</p>
+					</div>
+					<p>If you continue to experience problems, please <a href="mailto:tamsat@reading.ac.uk">contact</a> the TAMSAT group.</p>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" @click="error=false">
+							Close
+					</button>
+				</div>
+			</div>
+		</div>
+		<div v-show="!submitted && !error">
+			<img class="center" src="../assets/loading.gif" />
+		</div>
 	</div>
 </div>
 </template>
 
 <script>
 import DayMonthPicker from './DayMonthPicker.vue'
+import InfoBox from './InfoBox.vue'
+import help from '../helpstrings'
 
 export default {
 	props: ['apiUrl'],
@@ -171,7 +210,12 @@ export default {
 			email: '',
 			jobRef: 'tamsat-alert',
 
-			submitted: false
+			help,
+
+			submitting: false,
+			submitted: false,
+			error: false,
+			errorMessage: ''
 		}
 	},
 	computed: {
@@ -193,26 +237,44 @@ export default {
 				document.getElementById('terciles').setCustomValidity('The 3 terciles must add up to 1')
 			}
 			if (!failed) {
+				const today = new Date()
+				let ok = true
+				if (this.fDate.year === today.year &&
+					this.fDate.month === today.month &&
+					this.fDate.day === today.day) {
+					// Forecast date is set to today
+					ok = window.confirm('The forecast date is set to today - due to data latency issues, TAMSAT ALERT will use the most recent possible date, which will most likely not be the selected date.  Continue?')
+				}
+
 				// Form validates OK.  Send the POST request
-				fetch(`${this.apiUrl}tamsatAlertTask`, {
-						method: 'POST',
-						body: new FormData(this.$el.getElementsByTagName('form')[0])
-					})
-					.then(resp => {
-						if (resp.ok) {
-							resp.json()
-								.then(data => {
-									this.submitted = true
-								})
-						} else {
-							// There is a problem with the request
-							resp.json()
-								.then(errorJson => {
-									// TODO redirect to the error page, passing args
-									console.log(errorJson)
-								})
-						}
-					})
+				if (ok) {
+					this.submitting = true
+					fetch(`${this.apiUrl}tamsatAlertTask`, {
+							method: 'POST',
+							body: new FormData(this.$el.getElementsByTagName('form')[0])
+						})
+						.then(resp => {
+							this.submitting = false
+							if (resp.ok) {
+								resp.json()
+									.then(data => {
+										this.submitted = true
+									})
+							} else {
+								// There is a problem with the request
+								this.error = true
+								resp.json()
+									.then(errorJson => {
+										this.errorMessage = errorJson.message
+										console.error('Error with request', errorJson)
+									})
+							}
+						})
+						.catch(err => {
+							this.error = true
+							console.error('Error sending request', err)
+						})
+				}
 
 			}
 		},
@@ -227,7 +289,8 @@ export default {
 		}
 	},
 	components: {
-		DayMonthPicker
+		DayMonthPicker,
+		InfoBox
 	}
 }
 </script>
@@ -259,5 +322,16 @@ legend {
 	width: 100%;
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0.3);
+}
+
+.center {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+	/* width: 100%;
+	height: 100%; */
 }
 </style>
