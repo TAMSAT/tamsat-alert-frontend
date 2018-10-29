@@ -14,7 +14,7 @@
 			</tr>
 			<tr v-for="job in jobs">
 				<td>{{ job.description }}</td>
-				<td>{{ job.status }}</td>
+				<td><span :title="job.error">{{ job.status }}</span></td>
 				<td>{{ job.time }}</td>
 				<td><a
 					v-if="job.status=='COMPLETED' ||

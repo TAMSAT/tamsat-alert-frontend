@@ -10,11 +10,11 @@
 			<div class="row form-group" id="pointSelection">
 				<div class="col">
 					<small class="form-text text-muted">Latitude</small>
-					<input class="form-control" id="lat" type="number" name="lat" min=-35 max=39 v-model="latitude" step="any" />
+					<input class="form-control" id="lat" type="number" name="lat" min=-35 max=39 :value=latitude step="any" />
 				</div>
 				<div class="col">
 					<small class="form-text text-muted">Longitude</small>
-					<input class="form-control" id="lon" type="number" name="lon" min=-20 max=52 v-model="longitude" step="any" />
+					<input class="form-control" id="lon" type="number" name="lon" min=-20 max=52 :value=longitude step="any" />
 				</div>
 			</div>
 		</fieldset>
@@ -32,13 +32,14 @@
 			</legend>
 			<div class="form-group">
 				<div class="form-check">
-					<input class="form-check-input" type="radio" id="cumRain" name="metric" value="cumRain" checked v-model="metric">
+					<input class="form-check-input" type="radio" id="cumRain" name="metric" value="cumRain" checked v-model="metric" @change="metricChanged">
 					<label class="form-check-label" for="cumRain">Cumulative Rainfall</label>
 				</div>
-				<!-- <div class="form-check">
-					<input class="form-check-input" type="radio" id="soilmoisture" name="metric" value="soilMoisture" v-model="metric">
+				<div class="form-check">
+					<input class="form-check-input" type="radio" id="soilmoisture" name="metric" value="soilMoisture" v-model="metric" @change="metricChanged">
 					<label class="form-check-label" for="soilmoisture">Soil Moisture</label>
 				</div>
+				<!--
 				<div class="form-check">
 					<input class="form-check-input" type="radio" id="wrsi" name="metric" value="wrsi" v-model="metric">
 					<label class="form-check-label" for="wrsi">WRSI</label>
@@ -58,9 +59,65 @@
 					</div>
 				</div>
 			</div>
+			<div class="form-group" v-if=showSM>
+				<div class="form-group">
+					<small class="form-text text-muted">Soil Type</small>
+					<select class="form-control" name="soilType" :value=soilType>
+						<option value="clay">Clay</option>
+						<option value="silt">Silt</option>
+						<option value="sand">Sand</option>
+						<option value="loam">Loam</option>
+						<option value="silty clay">Silty Clay</option>
+						<option value="sandy clay">Sandy Clay</option>
+						<option value="clay loam">Clay Loam</option>
+						<option value="silty clay loam">Silty Clay Loam</option>
+						<option value="sandy clay loam">Sandy Clay Loam</option>
+						<option value="silt loam">Silt Loam</option>
+						<option value="sandy loam">Sandy Loam</option>
+						<option value="loamy sand">Loamy Sand</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<small class="form-text text-muted">Lead time (days)</small>
+					<input class="form-control" type="number" :value=leadTime name="leadTimeDays" min=0>
+				</div>
+			</div>
 		</fieldset>
 		<fieldset class="form-group">
 			<legend>Meteorological Forecast</legend>
+			<div class="form-group">
+				<label>Meteorological forecast variable&nbsp;<InfoBox :message="help.forecastVar" /></label>
+				<select class="form-control" name="fcVar" v-model="fcVar">
+					<option value="precipitation">Precipitation</option>
+					<option value="temperature">Air temperature</option>
+				</select>
+			</div>
+			<div class="form-group">
+				Forecast Region&nbsp;
+				<InfoBox :message="help.forecastRegion" />
+				<div class="row">
+					<div class="col-4 offset-4">
+						<small class="form-text text-muted">North</small>
+						<input class="form-control region-bounds" type="number" :value=fcLatMax name="fcLatMax" min=-35 max=39 step="any">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-4">
+						<small class="form-text text-muted">West</small>
+						<input class="form-control region-bounds" type="number" :value=fcLonMin name="fcLonMin" min=-20 max=52 step="any">
+					</div>
+					<div class="col-4 offset-4">
+						<small class="form-text text-muted">East</small>
+						<input class="form-control region-bounds" type="number" :value=fcLonMax name="fcLonMax" min=-20 max=52 step="any">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-4 offset-4">
+						<small class="form-text text-muted">South</small>
+						<input class="form-control region-bounds" type="number" :value=fcLatMin name="fcLatMin" min=-35 max=39 step="any">
+					</div>
+				</div>
+			</div>
 			<div class="form-group">
 				Forecast period&nbsp;
 				<InfoBox :message="help.forecastPeriod" />
@@ -123,8 +180,8 @@
 				<div class="modal-header">
 					<h5 class="modal-title">Job submitted</h5>
 					<button type="button" class="close" @click="submitted=false">
-          				<span>&times;</span>
-        			</button>
+						<span>&times;</span>
+					</button>
 				</div>
 				<div class="modal-body">
 					<p>Job successfully submitted to the TAMSAT-ALERT server.</p>
@@ -145,12 +202,12 @@
 				<div class="modal-header">
 					<h5 class="modal-title">Problem submitting job</h5>
 					<button type="button" class="close" @click="error=false">
-          				<span>&times;</span>
-        			</button>
+						<span>&times;</span>
+					</button>
 				</div>
 				<div class="modal-body">
 					<div v-if="errorMessage">
-						<p>The TAMSAT ALERT server has experienced an error.  Message from the server:</p>
+						<p>The TAMSAT ALERT server has experienced an error. Message from the server:</p>
 						<pre>{{errorMessage}}</pre>
 					</div>
 					<div v-else>
@@ -183,9 +240,9 @@ export default {
 	props: ['apiUrl'],
 	data() {
 		return {
-			latitude: 0,
+			// Just used to initialise starting values
+			latitude: 12.345,
 			longitude: 0,
-			fDate: new Date(),
 			poiStartDayMonth: {
 				day: 1,
 				month: 1
@@ -195,6 +252,13 @@ export default {
 				month: 12
 			},
 			metric: 'cumRain',
+			soilType: 'clay',
+			leadTime: 5,
+			fcVar: 'precipitation',
+			fcLatMin: 0,
+			fcLatMax: 10,
+			fcLonMin: 0,
+			fcLonMax: 10,
 			fcStartDayMonth: {
 				day: 1,
 				month: 1
@@ -203,19 +267,24 @@ export default {
 				day: 31,
 				month: 12
 			},
-			t1: 0.33,
-			t2: 0.33,
-			t3: 0.33,
 			statType: 'normal',
 			email: '',
 			jobRef: 'tamsat-alert',
 
 			help,
 
+			// Need 2-way bindings to update vars for form validation
+			fDate: new Date(),
+			t1: 0.33,
+			t2: 0.33,
+			t3: 0.33,
+
+			// State vars for controlling layout
 			submitting: false,
 			submitted: false,
 			error: false,
-			errorMessage: ''
+			errorMessage: '',
+			showSM: false
 		}
 	},
 	computed: {
@@ -229,6 +298,9 @@ export default {
 		}
 	},
 	methods: {
+		metricChanged(e) {
+			this.showSM = e.target.value === 'soilMoisture'
+		},
 		submitForm(e) {
 			let failed = false
 			// Validate that terciles add up to 1 (ish)
@@ -333,5 +405,9 @@ legend {
 	margin: auto;
 	/* width: 100%;
 	height: 100%; */
+}
+
+.region-bounds {
+	margin: 5px;
 }
 </style>
