@@ -303,6 +303,12 @@ export default {
 		},
 		submitForm(e) {
 			let failed = false
+
+			if(this.showSM) {
+				window.alert('Soil Moisture is not currently implemented.  Please run a cumulative rainfall task')
+				failed = true
+			}
+
 			// Validate that terciles add up to 1 (ish)
 			if (Math.abs(this.t1 + this.t2 + this.t3 - 1.0) > 0.015) {
 				failed = true
