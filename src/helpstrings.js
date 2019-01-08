@@ -8,5 +8,6 @@ export default {
 	forecastRegion: 'TODO',
 	forecastVar: 'TODO',
 	email: 'Your email address.\nThis will be used to send you an email once the job has been completed, and will be required when downloading it.',
-	ref: 'This is an extra reference for the subset job, or a group of subset jobs.  You will need to provide this and your email address when you want to download the data.  You can use the same reference for different jobs.  It is there to prevent other people from downloading your data just by knowing your email address, but is not as secure as a password.'
+	ref: 'This is an extra reference for the subset job, or a group of subset jobs.  You will need to provide this and your email address when you want to download the data.  You can use the same reference for different jobs.  It is there to prevent other people from downloading your data just by knowing your email address, but is not as secure as a password.',
+	soilType: 'The type of soil to model'
 }

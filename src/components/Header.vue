@@ -1,6 +1,6 @@
 <template>
 <div class="row">
-	<img src="../assets/img/header.png" alt="TAMSAT ALERT" class="col-auto">
+	<a href="../"><img src="../assets/img/header.png" alt="TAMSAT ALERT" class="col-auto"></a>
 	<nav class="navbar navbar-expand navbar-light bg-light">
 		<a class="navbar-brand">TAMSAT-ALERT</a>
 		<div class="navbar-nav">

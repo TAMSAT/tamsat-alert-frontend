@@ -10,11 +10,11 @@
 			<div class="row form-group" id="pointSelection">
 				<div class="col">
 					<small class="form-text text-muted">Latitude</small>
-					<input class="form-control" id="lat" type="number" name="lat" min=-35 max=39 :value=latitude step="any" />
+					<input class="form-control" id="lat" type="number" name="lat" min=-35 max=39 value=0 step="any" />
 				</div>
 				<div class="col">
 					<small class="form-text text-muted">Longitude</small>
-					<input class="form-control" id="lon" type="number" name="lon" min=-20 max=52 :value=longitude step="any" />
+					<input class="form-control" id="lon" type="number" name="lon" min=-20 max=52 value=0 step="any" />
 				</div>
 			</div>
 		</fieldset>
@@ -61,8 +61,9 @@
 			</div>
 			<div class="form-group" v-if=showSM>
 				<div class="form-group">
-					<small class="form-text text-muted">Soil Type</small>
-					<select class="form-control" name="soilType" :value=soilType>
+					<small class="form-text text-muted">Soil Type&nbsp;
+					<InfoBox :message="help.soilType" /></small>
+					<select class="form-control" name="soilType" value="clay">
 						<option value="clay">Clay</option>
 						<option value="silt">Silt</option>
 						<option value="sand">Sand</option>
@@ -76,10 +77,6 @@
 						<option value="sandy loam">Sandy Loam</option>
 						<option value="loamy sand">Loamy Sand</option>
 					</select>
-				</div>
-				<div class="form-group">
-					<small class="form-text text-muted">Lead time (days)</small>
-					<input class="form-control" type="number" :value=leadTime name="leadTimeDays" min=0>
 				</div>
 			</div>
 		</fieldset>
@@ -98,23 +95,23 @@
 				<div class="row">
 					<div class="col-4 offset-4">
 						<small class="form-text text-muted">North</small>
-						<input class="form-control region-bounds" type="number" :value=fcLatMax name="fcLatMax" min=-35 max=39 step="any">
+						<input class="form-control region-bounds" type="number" value=10 name="fcLatMax" min=-35 max=39 step="any">
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-4">
 						<small class="form-text text-muted">West</small>
-						<input class="form-control region-bounds" type="number" :value=fcLonMin name="fcLonMin" min=-20 max=52 step="any">
+						<input class="form-control region-bounds" type="number" value=0 name="fcLonMin" min=-20 max=52 step="any">
 					</div>
 					<div class="col-4 offset-4">
 						<small class="form-text text-muted">East</small>
-						<input class="form-control region-bounds" type="number" :value=fcLonMax name="fcLonMax" min=-20 max=52 step="any">
+						<input class="form-control region-bounds" type="number" value=10 name="fcLonMax" min=-20 max=52 step="any">
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-4 offset-4">
 						<small class="form-text text-muted">South</small>
-						<input class="form-control region-bounds" type="number" :value=fcLatMin name="fcLatMin" min=-35 max=39 step="any">
+						<input class="form-control region-bounds" type="number" value=0 name="fcLatMin" min=-35 max=39 step="any">
 					</div>
 				</div>
 			</div>
@@ -240,9 +237,6 @@ export default {
 	props: ['apiUrl'],
 	data() {
 		return {
-			// Just used to initialise starting values
-			latitude: 12.345,
-			longitude: 0,
 			poiStartDayMonth: {
 				day: 1,
 				month: 1
@@ -252,13 +246,7 @@ export default {
 				month: 12
 			},
 			metric: 'cumRain',
-			soilType: 'clay',
-			leadTime: 5,
 			fcVar: 'precipitation',
-			fcLatMin: 0,
-			fcLatMax: 10,
-			fcLonMin: 0,
-			fcLonMax: 10,
 			fcStartDayMonth: {
 				day: 1,
 				month: 1
