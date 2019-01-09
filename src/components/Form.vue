@@ -35,11 +35,11 @@
 					<input class="form-check-input" type="radio" id="cumRain" name="metric" value="cumRain" checked v-model="metric" @change="metricChanged">
 					<label class="form-check-label" for="cumRain">Cumulative Rainfall</label>
 				</div>
+				<!--
 				<div class="form-check">
 					<input class="form-check-input" type="radio" id="soilmoisture" name="metric" value="soilMoisture" v-model="metric" @change="metricChanged">
 					<label class="form-check-label" for="soilmoisture">Soil Moisture</label>
 				</div>
-				<!--
 				<div class="form-check">
 					<input class="form-check-input" type="radio" id="wrsi" name="metric" value="wrsi" v-model="metric">
 					<label class="form-check-label" for="wrsi">WRSI</label>
