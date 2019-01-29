@@ -296,9 +296,10 @@ export default {
 				window.alert('Soil Moisture is not currently implemented.  Please run a cumulative rainfall task')
 				failed = true
 			}
-
+			console.log(this.t1, this.t2, this.t3, (this.t1+this.t2+this.t3), (this.t1+this.t2+this.t3-1))
 			// Validate that terciles add up to 1 (ish)
-			if (Math.abs(this.t1 + this.t2 + this.t3 - 1.0) > 0.015) {
+			let tSum = parseFloat(this.t1) + parseFloat(this.t2) + parseFloat(this.t3)
+			if (Math.abs(tSum - 1.0) > 0.015) {
 				failed = true
 				document.getElementById('terciles').setCustomValidity('The 3 terciles must add up to 1')
 			}
