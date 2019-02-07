@@ -23,7 +23,7 @@
 				<InfoBox :message="help.forecastDate" />
 			</legend>
 			<div class="form-group">
-				<input class="form-control" type="date" id="forecastDate" name="initDate" v-model="forecastDate" required>
+				<input class="form-control" type="date" id="forecastDate" name="initDate" :value="forecastDate" @blur="setFcDate" required>
 			</div>
 		</fieldset>
 		<fieldset class="form-group">
@@ -278,14 +278,31 @@ export default {
 	computed: {
 		forecastDate: {
 			get() {
-				return this.fDate.toISOString().substring(0, 10)
-			},
-			set(newVal) {
-				this.fDate = new Date(Date.parse(newVal))
+				try{
+					return this.fDate.toISOString().substring(0, 10)
+				} catch(error) {
+					console.log("Trying to get invalid date: ", this.fDate)
+				}
 			}
 		}
 	},
 	methods: {
+		setFcDate(e) {
+			const oldDate = new Date(this.fDate)
+			let newVal = e.target.value
+			try {
+				if(newVal) {
+					this.fDate = new Date(Date.parse(newVal))
+				} else {
+					console.error('Invalid date chosen.  Reverting to old date')
+					this.fDate = oldDate
+				}
+			} catch(error) {
+				// This can fail, reset to old version
+				console.error('Invalid date chosen.  Reverting to old date')
+				this.fDate = oldDate
+			}
+		},
 		metricChanged(e) {
 			this.showSM = e.target.value === 'soilMoisture'
 		},
@@ -296,7 +313,6 @@ export default {
 				window.alert('Soil Moisture is not currently implemented.  Please run a cumulative rainfall task')
 				failed = true
 			}
-			console.log(this.t1, this.t2, this.t3, (this.t1+this.t2+this.t3), (this.t1+this.t2+this.t3-1))
 			// Validate that terciles add up to 1 (ish)
 			let tSum = parseFloat(this.t1) + parseFloat(this.t2) + parseFloat(this.t3)
 			if (Math.abs(tSum - 1.0) > 0.015) {
